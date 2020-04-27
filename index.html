@@ -67,11 +67,11 @@
 					gl.viewportWidth = canvas.width;
 					gl.viewportHeight = canvas.height;
 				} catch (e) {
-					document.write(e);
+					alert(e);
 					console.log("error:" + e);
 				}
 				if (!gl) {
-					console.log("Could not initialise WebGL");
+					alert("Could not initialise WebGL");
 					document.write("Could not initialise WebGL on this platform(are you using mobile?)")
 				}
 			}
