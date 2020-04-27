@@ -28,23 +28,26 @@
 		<script type="text/javascript" src="shaders/DefaultShader.js"></script>
 		<script type="text/javascript" src="shaders/SimpleColorShader.js"></script>
 		<script type="text/javascript" src="shaders/DepthShader.js"></script>
+		<script type="text/javascript" src="shaders/PhongShader.js"></script>
 
 
 		<script type="text/javascript" src="objects/Object.js"></script>
 		<script type="text/javascript" src="objects/Triangle.js"></script>
-		<script type="text/javascript" src="objects/Square.js"></script>
+		<script type="text/javascript" src="objects/Plane.js"></script>
 		<script type="text/javascript" src="objects/Circle.js"></script>
 		<script type="text/javascript" src="objects/Cube.js"></script>
 
 
 
-		<script type="text/javascript" src="Scene.js"></script>
+		<script type="text/javascript" src="scenes/Scene.js"></script>
+		<script type="text/javascript" src="scenes/TestScene.js"></script>
+
 
 		<script type="text/javascript" src="Camera.js"></script>
 		<script type="text/javascript" src="Renderer.js"></script>
 
 		<script type="text/javascript">
-			var gl;
+			let gl;
 
 			function initGL(canvas) {
 				try {
@@ -54,39 +57,42 @@
 					gl.viewportWidth = canvas.width;
 					gl.viewportHeight = canvas.height;
 				} catch (e) {
+					document.write(e);
 					console.log("error:" + e);
 				}
 				if (!gl) {
 					console.log("Could not initialise WebGL");
+					document.write("Could not initialise WebGL on this platform(are you using mobile?)")
 				}
 			}
 
-			
 
-			
 
-			
+
+
+
 			// function setMatrixUniforms() {
 			// 	gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 			// 	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
 
 			// }
-			
 
-			
-			
-			let renderer;
+
+
+
+			let renderer, shaderManager;
 			function webGLStart() {
 				var canvas = document.getElementById("glcanvas");
 				initGL(canvas);
 
+				shaderManager = new ShaderManager();
 				renderer = new Renderer();
 
-				
+
 			}
 
-			
+
 		</script>
 	</head>
 	<body onload="webGLStart();">

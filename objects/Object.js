@@ -1,22 +1,17 @@
 class Object {
 
-	constructor(pos,rot,scale,shaderProgram,renderMethod){
+	constructor(args){//pos,rot,scale,shaderProgram,renderMethod){
 		this.id = Object.makeId();
-		this.pos = (pos !== undefined)?pos:vec3.fromValues(0,0,0)
-		if(rot !== undefined){
-			this.rot = rot;
-		}
-		else{
-			this.rot = quat.create();
-			quat.fromEuler(this.rot,0,0,0)
-		}
-		this.scale = (scale !== undefined)?scale:vec3.fromValues(1,1,1);
-		this.shaderProgram = (shaderProgram !== undefined)?shaderProgram:ShaderManager.getDefaultShader();
-		this.renderMethod = (renderMethod !== undefined)?renderMethod:gl.TRIANGLE_STRIP
-		//console.log(this.renderMethod, gl.TRIANGLES)
-		this.shaderOptions = {};
-	}
+		this.pos = (args.pos !== undefined)?args.pos:vec3.fromValues(0,0,0);
+		this.rot = (args.rot !== undefined)?args.rot:quat.fromEuler(quat.create(),0,0,0);
+		this.scale = (args.scale !== undefined)?args.scale:vec3.fromValues(1,1,1);
+		this.shaderProgram = (args.shader !== undefined)?args.shader:ShaderManager.getDefaultShader();
+		this.renderMethod = (args.renderMethod !== undefined)?args.renderMethod:gl.TRIANGLE_STRIP; // default render method is triangle_strip
+		this.shaderOptions = (args.shaderOptions !== undefined)?args.shaderOptions:{};
 
+		this.hasNormals = (args.hasNormals !== undefined)?args.hasNormals:false;
+	}
+	//currently unused, might be useful in future
 	static registerObject(o){
 		Object.objects.push(o)
 	}

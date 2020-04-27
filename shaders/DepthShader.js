@@ -4,28 +4,9 @@ class DepthShader extends ShaderProgram {
 	constructor(){
 		super("depth");
 
-		
-		this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-		this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-		
-		gl.shaderSource(this.vertexShader, this.vertexShaderSource);
-		gl.compileShader(this.vertexShader);
-		gl.shaderSource(this.fragmentShader, this.fragmentShaderSource);
-		gl.compileShader(this.fragmentShader);
-
-		if (!gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS)) {
-			console.log(gl.getShaderInfoLog(this.vertexShader));
-			return null;
-		}
-		if (!gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS)) {
-			console.log(gl.getShaderInfoLog(this.fragmentShader));
-			return null;
-		}
-
-		super.init(this);
-
+		super.init(this.vertexShaderSource,this.fragmentShaderSource);
 		this.initCustomUniforms();
-		
+
 
 	}
 	initCustomUniforms(){
@@ -34,11 +15,11 @@ class DepthShader extends ShaderProgram {
 
 	updateCustomUniforms(dt,shaderOptions){
 		gl.uniform1f(this.timeUniform, dt/1000.0);
-			
+
 	}
 
 
-	
+
 	vertexShaderSource = `
 		attribute vec3 aVertexPosition;
 		uniform highp float u_time;

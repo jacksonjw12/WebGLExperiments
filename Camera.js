@@ -9,7 +9,7 @@ class Camera{
 		this.rot = quat.create();
 		quat.fromEuler(this.rot,0,0,0)
 
-		mat4.perspective(this.pMatrix,45, gl.viewportWidth / gl.viewportHeight, 0.1, 30.0);
+		mat4.perspective(this.pMatrix,45, gl.viewportWidth / gl.viewportHeight, 0.1, 40.0);
 
 
 		mat4.fromRotationTranslation(this.mvMatrix,this.rot,this.pos)
@@ -17,7 +17,7 @@ class Camera{
 		//this.rot = quat.create();
 		//quat.fromEuler(this.rot,0,0,0)
 
-		//this.mvMatrix = 
+		//this.mvMatrix =
 
 	}
 	updatePosition(newPos){

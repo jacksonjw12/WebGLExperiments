@@ -2,29 +2,12 @@ class SimpleColorShader extends ShaderProgram {
 
 
 	constructor(){
-		super("simpleColor");
+		super("simpleColor",true);
 
-		this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-		this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-		
-		gl.shaderSource(this.vertexShader, this.vertexShaderSource);
-		gl.compileShader(this.vertexShader);
-		gl.shaderSource(this.fragmentShader, this.fragmentShaderSource);
-		gl.compileShader(this.fragmentShader);
-
-		if (!gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS)) {
-			console.log(gl.getShaderInfoLog(this.vertexShader));
-			return null;
-		}
-		if (!gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS)) {
-			console.log(gl.getShaderInfoLog(this.fragmentShader));
-			return null;
-		}
-
-		super.init(this);
+		super.init(this.vertexShaderSource,this.fragmentShaderSource);
 
 		this.initCustomUniforms();
-		
+
 
 	}
 	initCustomUniforms(){
@@ -38,30 +21,45 @@ class SimpleColorShader extends ShaderProgram {
 	}
 
 
-	
+
 	vertexShaderSource = `
-		attribute vec3 aVertexPosition;
+		attribute vec4 aVertexPosition;
+		attribute vec4 aVertexNormal;
+
 		
 		uniform mat4 uMVMatrix;
 		uniform mat4 uPMatrix;
-
+		uniform mat4 uNormalMatrix;
+		
+		uniform highp vec3 lightingDirection;
+		uniform highp vec3 ambientLight;
+		
+		varying highp vec3 vLighting;
+		
 		void main(void) {
 			
-			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,aVertexPosition.z, 1.0);
-
+			gl_Position = uPMatrix * uMVMatrix * aVertexPosition;
+			
+			highp vec3 directionalLightColor = vec3(1, 1, 1);
+			
+			highp vec4 transformedNormal = uNormalMatrix * aVertexNormal;
+			
+			highp float directional = max(dot(transformedNormal.xyz, lightingDirection), 0.0);
+			vLighting = ambientLight + (directionalLightColor * directional);
 			
 		}
 	`;
 
 	fragmentShaderSource = `
 		precision mediump float;
-		uniform vec2 resolution;
 		uniform mediump vec4 u_color;
-
+		
+		varying highp vec3 vLighting;
 
 		void main() {
-			
+ 
 			gl_FragColor = u_color;
+			gl_FragColor.rgb *= vLighting;
 		}
 	`;
 
