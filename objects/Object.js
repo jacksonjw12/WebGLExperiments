@@ -5,11 +5,14 @@ class Object {
 		this.pos = (args.pos !== undefined)?args.pos:vec3.fromValues(0,0,0);
 		this.rot = (args.rot !== undefined)?args.rot:quat.fromEuler(quat.create(),0,0,0);
 		this.scale = (args.scale !== undefined)?args.scale:vec3.fromValues(1,1,1);
-		this.shaderProgram = (args.shader !== undefined)?args.shader:ShaderManager.getDefaultShader();
-		this.renderMethod = (args.renderMethod !== undefined)?args.renderMethod:gl.TRIANGLE_STRIP; // default render method is triangle_strip
-		this.shaderOptions = (args.shaderOptions !== undefined)?args.shaderOptions:{};
 
-		this.hasNormals = (args.hasNormals !== undefined)?args.hasNormals:false;
+		this.geometry = (args.geometry !== undefined)?args.geometry:new Cube();
+		this.material = (args.material !== undefined)?args.material:new defaultMaterial(args.materialOptions,this.geometry);
+
+
+		this.pointLight = (args.pointLight !== undefined)?args.pointLight:false;
+
+		this.action = (args.action !== undefined)?args.action:undefined;
 	}
 	//currently unused, might be useful in future
 	static registerObject(o){
@@ -27,6 +30,9 @@ class Object {
 	static makeId(){
 		return Object.objects.length;
 	}
+
+
+
 
 }
 Object.objects = [];

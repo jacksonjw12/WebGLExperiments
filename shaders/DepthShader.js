@@ -2,7 +2,7 @@ class DepthShader extends ShaderProgram {
 
 
 	constructor(){
-		super("depth");
+		super("depth",false);
 
 		super.init(this.vertexShaderSource,this.fragmentShaderSource);
 		this.initCustomUniforms();
@@ -22,6 +22,7 @@ class DepthShader extends ShaderProgram {
 
 	vertexShaderSource = `
 		attribute vec3 aVertexPosition;
+		//attribute vec4 aVertexNormal;
 		uniform highp float u_time;
 
 		uniform mat4 uMVMatrix;
@@ -32,9 +33,10 @@ class DepthShader extends ShaderProgram {
 		void main(void) {
 			//gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 			//gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,aVertexPosition.z+sin(u_time/(aVertexPosition.y-.5)), 1.0);
-			float zPos = 2.0*sin(u_time)*(1.-sqrt(aVertexPosition.x*aVertexPosition.x+aVertexPosition.y*aVertexPosition.y));
+			float zPos = aVertexPosition.z+2.0*sin(u_time)*(1.-sqrt(aVertexPosition.x*aVertexPosition.x+aVertexPosition.y*aVertexPosition.y));
 			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,zPos, 1.0);
-			//gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,aVertexPosition.z, 1.0);
+			// float zPos = aVertexPosition.z;
+			// gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,aVertexPosition.z, 1.0);
 
 			origZ = aVertexPosition.z;
 			newZ = zPos;

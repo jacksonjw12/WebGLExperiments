@@ -2,7 +2,7 @@ class DefaultShader extends ShaderProgram {
 
 
 	constructor(){
-		super("default");
+		super("default",false);
 
 		this.i = 0;
 
@@ -13,59 +13,94 @@ class DefaultShader extends ShaderProgram {
 
 	}
 	initCustomUniforms(){
-		this.timeUniform = gl.getUniformLocation(this.program, "u_time");
-		this.randUniform = gl.getUniformLocation(this.program, "rand");
+		// this.timeUniform = gl.getUniformLocation(this.program, "u_time");
+		// this.randUniform = gl.getUniformLocation(this.program, "rand");
+		this.colorUniform = gl.getUniformLocation(this.program, "u_color");
 	}
 
-	updateCustomUniforms(dt,shaderOptions){
+	updateCustomUniforms(dt,material){
+		gl.uniform4fv(this.colorUniform, material.color);
 
 
-		this.i++
-		gl.uniform1f(this.timeUniform, dt/1000.0);
-		if(this.i % 100 === 0 ){
-			gl.uniform1f(this.randUniform, Math.random());
-
-		}
+		// this.i++
+		// gl.uniform1f(this.timeUniform, dt/1000.0);
+		// if(this.i % 100 === 0 ){
+		// 	gl.uniform1f(this.randUniform, Math.random());
+		//
+		// }
 
 	}
-
-
-
 	vertexShaderSource = `
-		attribute vec3 aVertexPosition;
-		uniform highp float u_time;
-		uniform lowp float rand;
+		attribute vec4 aVertexPosition;
+		attribute vec4 aVertexNormal;
+
+		
 		uniform mat4 uMVMatrix;
 		uniform mat4 uPMatrix;
-		varying lowp vec4 vColor;
-
+		
+		
 		void main(void) {
-			//gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-			//gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,aVertexPosition.z+sin(u_time/(aVertexPosition.y-.5)), 1.0);
-
-			float zPos = 2.0*sin(u_time)*(1.-sqrt(aVertexPosition.x*aVertexPosition.x+aVertexPosition.y*aVertexPosition.y));
-			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,zPos, 1.0);
-
-			vColor = vec4(aVertexPosition.x,aVertexPosition.y,0,1.0);
+			
+			gl_Position = uPMatrix * uMVMatrix * aVertexPosition;
+			
+			
+			
 		}
 	`;
 
 	fragmentShaderSource = `
 		precision mediump float;
-		uniform vec2 resolution;
-		uniform bool intMod;
-		uniform highp float u_time;
-		uniform lowp float rand;
-		varying lowp vec4 vColor;
-
+		uniform mediump vec4 u_color;
 
 		void main() {
-			vec2 v_texCoord = gl_FragCoord.xy / resolution.xy;
-			float depthColor = 1.-(gl_FragCoord.z-.99)*100.;
-			//gl_FragColor =  vec4(abs(gl_FragCoord.x + u_time*100.-(800.)) / 800.,((gl_FragCoord.y)-300.) / 300.,0,1.0);
-			gl_FragColor = vec4(depthColor+vColor.x,depthColor+vColor.y,depthColor,1.0);
+ 
+			gl_FragColor = u_color;
+			// gl_FragColor.rgb *= vLighting;
 		}
 	`;
+
+
+	// vertexShaderSource = `
+	// 	attribute vec3 aVertexPosition;
+	// 	attribute vec4 aVertexNormal;
+	//
+	// 	uniform highp float u_time;
+	// 	uniform lowp float rand;
+	// 	uniform mat4 uMVMatrix;
+	// 	uniform mat4 uPMatrix;
+	// 	//varying lowp vec4 vColor;
+	//
+	// 	uniform highp vec3 lightingDirection;
+	// 	uniform highp vec3 ambientLight;
+	// 	uniform highp vec3 lightPosition;
+	//
+	// 	void main(void) {
+	// 		//gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+	// 		//gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,aVertexPosition.z+sin(u_time/(aVertexPosition.y-.5)), 1.0);
+	//
+	// 		//float zPos = 2.0*sin(u_time)*(1.-sqrt(aVertexPosition.x*aVertexPosition.x+aVertexPosition.y*aVertexPosition.y));
+	// 		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition.x,aVertexPosition.y,aVertexPosition.z, 1.0);
+	//
+	// 		//vColor = vec4(aVertexPosition.x,aVertexPosition.y,0,1.0);
+	// 	}
+	// `;
+	//
+	// fragmentShaderSource = `
+	// 	precision mediump float;
+	// 	//uniform vec2 resolution;
+	// 	//uniform bool intMod;
+	// 	uniform highp float u_time;
+	// 	uniform lowp float rand;
+	// 	//varying lowp vec4 vColor;
+	//
+	//
+	// 	void main() {
+	// 		//vec2 v_texCoord = gl_FragCoord.xy / resolution.xy;
+	// 		//float depthColor = 1.-(gl_FragCoord.z-.99)*100.;
+	// 		//gl_FragColor =  vec4(abs(gl_FragCoord.x + u_time*100.-(800.)) / 800.,((gl_FragCoord.y)-300.) / 300.,0,1.0);
+	// 		gl_FragColor = vec4(0.5,0.5,0.5,1.0);//vec4(depthColor+vColor.x,depthColor+vColor.y,depthColor,1.0);
+	// 	}
+	// `;
 
 
 }

@@ -54,6 +54,7 @@ class ShaderProgram {
 		this.uniforms.mvMatrixUniform = gl.getUniformLocation(this.program, "uMVMatrix");
 
 		if(this.usesNormals){
+			console.log("using normals")
 			this.attributes.normalAttribute = gl.getAttribLocation(this.program, "aVertexNormal");
 			// gl.enableVertexAttribArray(this.attributes.normalAttribute);
 

@@ -15,9 +15,9 @@ class SimpleColorShader extends ShaderProgram {
 		// this.randUniform = gl.getUniformLocation(this.program, "rand");
 	}
 
-	updateCustomUniforms(dt,shaderOptions){
+	updateCustomUniforms(dt,material){
 		//this.colorUniform = shaderOptions.color;
-		gl.uniform4fv(this.colorUniform, shaderOptions.color);
+		gl.uniform4fv(this.colorUniform, material.color);
 	}
 
 

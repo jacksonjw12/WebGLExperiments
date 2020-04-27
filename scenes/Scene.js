@@ -15,6 +15,10 @@ class Scene{
 
 		this.camera = new Camera()
 
+		if (new.target === Scene) {
+			this.addObject(new Cube({"material":new ShaderMaterial("simpleColor")}))
+		}
+
 
 	}
 	animate(dt){

@@ -36,17 +36,26 @@ class Renderer{
 	}
 	drawScene(dt) {
 
-
+		// if(dt > 1000){
+		// 	return;
+		// }
 		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
 
-		let object,shader;
+		let object,shader,geometry,material;
+		// console.log(this.scene.objects[0])
 		for(let o = 0; o < this.scene.objects.length; o++){
 			object = this.scene.objects[o];
-			shader = object.shaderProgram;
+			material = object.material;
+			shader = material.shader;
+			geometry = object.geometry;
+
+
+
 			//use the correct shader for this object
+
 			gl.useProgram(shader.program);
 
 			//get the matrix for the rotation, scale, and position of this object
@@ -56,13 +65,13 @@ class Renderer{
 			mat4.mul(this.mvOMatrix,this.scene.camera.mvMatrix,this.mvOMatrix);
 
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, object.vertexPositionBuffer);
-			gl.vertexAttribPointer(object.shaderProgram.attributes.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-			gl.enableVertexAttribArray(object.shaderProgram.attributes.vertexPositionAttribute)
-			if(object.hasNormals){
-				gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
-				gl.vertexAttribPointer(object.shaderProgram.attributes.normalAttribute, object.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-				gl.enableVertexAttribArray(object.shaderProgram.attributes.normalAttribute);
+			gl.bindBuffer(gl.ARRAY_BUFFER, geometry.vertexPositionBuffer);
+			gl.vertexAttribPointer(shader.attributes.vertexPositionAttribute, geometry.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			gl.enableVertexAttribArray(shader.attributes.vertexPositionAttribute)
+			if(geometry.hasNormals && material.shader.usesNormals){
+				gl.bindBuffer(gl.ARRAY_BUFFER, geometry.normalBuffer);
+				gl.vertexAttribPointer(shader.attributes.normalAttribute, geometry.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+				gl.enableVertexAttribArray(shader.attributes.normalAttribute);
 
 			}
 
@@ -71,13 +80,11 @@ class Renderer{
 			shader.updateMatrixUniforms(this.scene.camera.pMatrix,this.mvOMatrix,this.scene.lightingDirection,this.scene.ambientLighting,this.scene.lightPosition);
 
 			//give the shader any custom uniforms that it might need
-			shader.updateCustomUniforms(dt,object.shaderOptions)
+			shader.updateCustomUniforms(dt,material)
 
 			//draw to the screen
-			gl.drawArrays(object.renderMethod, 0, object.vertexPositionBuffer.numItems);
-			if(object.hasNormals){
-				//gl.disableVertexAttribArray(object.shaderProgram.attributes.normalAttribute);
-			}
+			gl.drawArrays(geometry.renderMethod, 0, geometry.vertexPositionBuffer.numItems);
+
 		}
 
 

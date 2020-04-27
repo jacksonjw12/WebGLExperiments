@@ -16,7 +16,10 @@ class TestScene extends Scene{
 		//depth circle
 		super.addObject(new Circle({
 			"pos":vec3.fromValues(-3, 0, 0),
-			"shader":ShaderManager.getShader("depth")
+			"material":new ShaderMaterial("depth"),
+			"materialOptions":{
+				"color":vec4.fromValues(.5,1,1,1.)
+			}
 		}));
 
 		//skybox thing
@@ -25,8 +28,8 @@ class TestScene extends Scene{
 		super.addObject(new Cube({
 			"scale":vec3.fromValues(20,20,20),
 			"shader":ShaderManager.getShader("phong"),
-			"shaderOptions":{
-				"color":vec4.fromValues(1,1,1,1.)
+			"materialOptions":{
+				"color":vec4.fromValues(.5,1,1,1.)
 			}
 		}))
 
@@ -37,8 +40,9 @@ class TestScene extends Scene{
 					"pos":vec3.fromValues(-5 + r*3, -2.5, -5 + c*3),
 					"rot":quat.fromEuler(quat.create(), 90+r*c+c, 0, 0),
 					"scale":vec3.fromValues(1, 1, .2),
-					"shader":ShaderManager.getShader("phong"),
-					"shaderOptions":{
+					"material":new ShaderMaterial((Math.random()>.5)?"phong":"depth"),
+
+					"materialOptions":{
 						"color":vec4.fromValues(.5, .5, .5, 1.)
 					}
 				}));
@@ -49,20 +53,12 @@ class TestScene extends Scene{
 			"scale":vec3.fromValues(.1,.1,.1),
 			"pos":super.lightPosition,
 			"shader":ShaderManager.getShader("simpleColor"),
-			"shaderOptions":{
+			"materialOptions":{
 				"color":vec4.fromValues(0.7078, 0.6644, 0.2398,1.0)
 			}
 		}))
 
-		// let rightPlane = new Plane(
-		// 	vec3.fromValues(5,2.5,0),
-		// 	quat.fromEuler(quat.create(),0,90,0),
-		// 	vec3.fromValues(5,5,5),
-		// 	ShaderManager.getShader("simpleColor"),
-		// 	{"color":vec4.fromValues(.6,.6,.6,1.)}
 
-		// 	);
-		// this.scene.addObject(rightPlane);
 
 	}
 
@@ -71,7 +67,7 @@ class TestScene extends Scene{
 		quat.fromEuler(rotQuat,0,.5,0);
 		for(let o = 0; o < this.objects.length; o++){
 
-			//quat.multiply(this.scene.objects[o].rot,this.scene.objects[o].rot,rotQuat)
+			//quat.multiply(this.scene.geometry[o].rot,this.scene.geometry[o].rot,rotQuat)
 
 		}
 		let circlingRadius = 10;
