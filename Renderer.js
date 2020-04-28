@@ -7,7 +7,7 @@ class Renderer{
 
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
  		gl.enable(gl.BLEND);
-		gl.clearColor(1.0, 1.0, 1.0, 1.0);
+		gl.clearColor(1.0, 0.0, 1.0, 1.0);
 		gl.enable(gl.DEPTH_TEST);
 
 
@@ -23,17 +23,18 @@ class Renderer{
 		//this.setupTestScene();
 
 
+		this.tick = (dt)=> {
+			requestAnimationFrame(this.tick);
+
+			this.scene.animate(dt);
+			this.drawScene(dt);
+
+		}
 		this.tick(0);
 
 	}
 
 
-	tick = (dt)=> {
-		requestAnimationFrame(this.tick);
-		this.scene.animate(dt);
-		this.drawScene(dt);
-
-	}
 	drawScene(dt) {
 
 		// if(dt > 1000){

@@ -23,16 +23,21 @@ class TriangleGeometry extends Geometry {
 
 
 
-	static vertices = [
+
+
+}
+
+
+
+
+TriangleGeometry.vertices = [
 			 0.0,  1.0,  0.0,
 			-1.0, -1.0,  0.0,
 			 1.0, -1.0,  0.0
 		];
 
-	static normals = [
+TriangleGeometry.normals = [
 		0.0,  0.0,  1.0,
 		0.0,  0.0,  1.0,
 		0.0,  0.0,  1.0,
 	]
-
-}

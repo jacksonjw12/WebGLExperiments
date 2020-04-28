@@ -25,18 +25,19 @@ class PlaneGeometry extends Geometry {
 
 
 
-	static vertices = [
+
+}
+
+PlaneGeometry.vertices = [
 					 1.0,  1.0,  0.0,
 					-1.0,  1.0,  0.0,
 					 1.0, -1.0,  0.0,
 					-1.0, -1.0,  0.0
 				];
 
-	static normals = [
+PlaneGeometry.normals = [
 		0.0,  0.0,  1.0,
 		0.0,  0.0,  1.0,
 		0.0,  0.0,  1.0,
 		0.0,  0.0,  1.0,
 	]
-
-}

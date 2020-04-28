@@ -3,10 +3,9 @@ class DefaultShader extends ShaderProgram {
 
 	constructor(){
 		super("default",false);
-
 		this.i = 0;
 
-		super.init(this.vertexShaderSource,this.fragmentShaderSource);
+		super.init(DefaultShader.vertexShaderSource,DefaultShader.fragmentShaderSource);
 
 		this.initCustomUniforms();
 
@@ -30,34 +29,7 @@ class DefaultShader extends ShaderProgram {
 		// }
 
 	}
-	vertexShaderSource = `
-		attribute vec4 aVertexPosition;
-		attribute vec4 aVertexNormal;
 
-		
-		uniform mat4 uMVMatrix;
-		uniform mat4 uPMatrix;
-		
-		
-		void main(void) {
-			
-			gl_Position = uPMatrix * uMVMatrix * aVertexPosition;
-			
-			
-			
-		}
-	`;
-
-	fragmentShaderSource = `
-		precision mediump float;
-		uniform mediump vec4 u_color;
-
-		void main() {
- 
-			gl_FragColor = u_color;
-			// gl_FragColor.rgb *= vLighting;
-		}
-	`;
 
 
 	// vertexShaderSource = `
@@ -104,6 +76,30 @@ class DefaultShader extends ShaderProgram {
 
 
 }
+
+DefaultShader.vertexShaderSource = `
+	attribute vec4 aVertexPosition;
+	attribute vec4 aVertexNormal;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	
+	void main(void) {
+		
+		gl_Position = uPMatrix * uMVMatrix * aVertexPosition;
+		
+	}
+`;
+
+DefaultShader.fragmentShaderSource = `
+	precision mediump float;
+	uniform mediump vec4 u_color;
+
+	void main() {
+
+		gl_FragColor = u_color;
+		// gl_FragColor.rgb *= vLighting;
+	}
+`;
 
 
 // let defaultVertexShader = `

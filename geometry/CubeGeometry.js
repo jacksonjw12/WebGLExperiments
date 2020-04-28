@@ -26,7 +26,12 @@ class CubeGeometry extends Geometry {
 
 
 
-	static vertices = [
+
+
+
+}
+
+CubeGeometry.vertices = [
 
 
         // Left face
@@ -94,7 +99,7 @@ class CubeGeometry extends Geometry {
 
     ];
 
-	static normals = [
+CubeGeometry.normals = [
           // left column front
           0, 0, 1,
           0, 0, 1,
@@ -223,7 +228,3 @@ class CubeGeometry extends Geometry {
           -1, 0, 0,
           -1, 0, 0];
 
-
-
-
-}

@@ -2,6 +2,7 @@
 class ShaderProgram {
 
 	constructor(name,usesNormals){
+
 		this.name = name;
 		this.usesNormals = (usesNormals !== undefined)?usesNormals:false;
 		this.attributes = [];
@@ -19,6 +20,7 @@ class ShaderProgram {
 		if (!gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS)) {
 			console.log(this.name)
 			console.log(gl.getShaderInfoLog(this.vertexShader));
+
 			return null;
 		}
 

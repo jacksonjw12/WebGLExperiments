@@ -3,6 +3,7 @@ class ShaderManager {
 
 
 	constructor(){
+
 		ShaderManager.shaderPrograms = [new DefaultShader(),new SimpleColorShader(),new DepthShader(),new PhongShader()];
 
 		gl.useProgram(ShaderManager.shaderPrograms[0].program);

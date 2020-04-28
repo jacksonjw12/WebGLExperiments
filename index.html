@@ -22,13 +22,15 @@
 		const quat = glMatrix.quat;
 		</script>
 
-		<script type="text/javascript" src="ShaderManager.js"></script>
 
 		<script type="text/javascript" src="shaders/ShaderProgram.js"></script>
 		<script type="text/javascript" src="shaders/DefaultShader.js"></script>
 		<script type="text/javascript" src="shaders/SimpleColorShader.js"></script>
 		<script type="text/javascript" src="shaders/DepthShader.js"></script>
 		<script type="text/javascript" src="shaders/PhongShader.js"></script>
+
+		<script type="text/javascript" src="ShaderManager.js"></script>
+
 
 		<script type="text/javascript" src="materials/Material.js"></script>
 		<script type="text/javascript" src="materials/defaultMaterial.js"></script>
@@ -66,6 +68,7 @@
 					canvas.height = window.innerHeight;
 					gl.viewportWidth = canvas.width;
 					gl.viewportHeight = canvas.height;
+
 				} catch (e) {
 					alert(e);
 					console.log("error:" + e);
@@ -93,10 +96,13 @@
 
 			let renderer, shaderManager;
 			function webGLStart() {
-				var canvas = document.getElementById("glcanvas");
+
+				let canvas = document.getElementById("glcanvas");
 				initGL(canvas);
 
+
 				shaderManager = new ShaderManager();
+
 				renderer = new Renderer();
 
 
