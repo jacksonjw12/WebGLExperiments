@@ -7,7 +7,7 @@ class Renderer{
 
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
  		gl.enable(gl.BLEND);
-		gl.clearColor(1.0, 0.0, 1.0, 1.0);
+		gl.clearColor(1.0, 1.0, 1.0, 1.0);
 		gl.enable(gl.DEPTH_TEST);
 
 
@@ -81,7 +81,7 @@ class Renderer{
 			shader.updateMatrixUniforms(this.scene.camera.pMatrix,this.mvOMatrix,this.scene.lightingDirection,this.scene.ambientLighting,this.scene.lightPosition);
 
 			//give the shader any custom uniforms that it might need
-			shader.updateCustomUniforms(dt,material)
+			shader.updateCustomUniforms(dt,material,object,this.scene.camera.pMatrix,this.mvOMatrix)
 
 			//draw to the screen
 			gl.drawArrays(geometry.renderMethod, 0, geometry.vertexPositionBuffer.numItems);

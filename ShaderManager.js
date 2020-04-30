@@ -4,11 +4,16 @@ class ShaderManager {
 
 	constructor(){
 
-		ShaderManager.shaderPrograms = [new DefaultShader(),new SimpleColorShader(),new DepthShader(),new PhongShader()];
-
-		gl.useProgram(ShaderManager.shaderPrograms[0].program);
+		//ShaderManager.shaderPrograms = [new DefaultShader(),new SimpleColorShader(),new DepthShader(),new PhongShader(),new ComprehensiveLightingShader()];
+		for(let s = 0; s < ShaderManager.shaderPrograms.length; s++){
+			ShaderManager.shaderPrograms[s].init();
+		}
+		ShaderManager.defaultShader = ShaderManager.getShader("default");
+		console.log(ShaderManager.defaultShader);
+		gl.useProgram(ShaderManager.defaultShader.program);
 
 	}
+
 
 	static getShader(shaderName){
 		for(let s = 0; s< ShaderManager.shaderPrograms.length; s++){
@@ -16,13 +21,14 @@ class ShaderManager {
 				return ShaderManager.shaderPrograms[s];
 			}
 		}
-		return ShaderManager.getDefaultShader();
+		return ShaderManager.defaultShader;
 	}
 
 	static getDefaultShader(){
-		return ShaderManager.shaderPrograms[0]
+		return ShaderManager.defaultShader;
 	}
 
 
 
 }
+ShaderManager.shaderPrograms = [];

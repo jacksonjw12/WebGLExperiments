@@ -14,13 +14,20 @@
 			padding:0;
 		}
 		</style>
+<!--	Libraries	-->
 		<script type="text/javascript" src="gl-matrix-min.js"></script>
+		<script type="text/javascript" src="simplex-noise.js"></script>
+
 		<script>
 		const mat4 = glMatrix.mat4;
+		const vec2 = glMatrix.vec2;
 		const vec3 = glMatrix.vec3;
 		const vec4 = glMatrix.vec4;
 		const quat = glMatrix.quat;
 		</script>
+<!--		-->
+<!--	Order of the following matters	-->
+		<script type="text/javascript" src="ShaderManager.js"></script>
 
 
 		<script type="text/javascript" src="shaders/ShaderProgram.js"></script>
@@ -28,8 +35,9 @@
 		<script type="text/javascript" src="shaders/SimpleColorShader.js"></script>
 		<script type="text/javascript" src="shaders/DepthShader.js"></script>
 		<script type="text/javascript" src="shaders/PhongShader.js"></script>
+		<script type="text/javascript" src="shaders/ComprehensiveLightingShader.js"></script>
+		<script type="text/javascript" src="shaders/CoolShader.js"></script>
 
-		<script type="text/javascript" src="ShaderManager.js"></script>
 
 
 		<script type="text/javascript" src="materials/Material.js"></script>
@@ -59,7 +67,7 @@
 		<script type="text/javascript" src="Renderer.js"></script>
 
 		<script type="text/javascript">
-			let gl;
+			let gl, resolution;
 
 			function initGL(canvas) {
 				try {
@@ -68,7 +76,7 @@
 					canvas.height = window.innerHeight;
 					gl.viewportWidth = canvas.width;
 					gl.viewportHeight = canvas.height;
-
+					resolution = vec2.fromValues(canvas.width,canvas.height);
 				} catch (e) {
 					alert(e);
 					console.log("error:" + e);

@@ -7,15 +7,22 @@ class ShaderProgram {
 		this.usesNormals = (usesNormals !== undefined)?usesNormals:false;
 		this.attributes = [];
 		this.uniforms = [];
-
+		this.shadersSourceReady = false;
 	}
-
-	init(vertexShaderSource,fragmentShaderSource){
-
+	loadShaderSource(vertexShaderSource,fragmentShaderSource){
+		this.vertexShaderSource = vertexShaderSource;
+		this.fragmentShaderSource = fragmentShaderSource;
+		this.shadersSourceReady = true;
+	}
+	init(){
+		if(!this.shadersSourceReady){
+			console.info("Shader: "+this.name + " has no shader sources loaded");
+			return;
+		}
 
 		//compile vertex shader
 		this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(this.vertexShader, vertexShaderSource);
+		gl.shaderSource(this.vertexShader, this.vertexShaderSource);
 		gl.compileShader(this.vertexShader);
 		if (!gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS)) {
 			console.log(this.name)
@@ -26,7 +33,7 @@ class ShaderProgram {
 
 		//compile fragment shader
 		this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-		gl.shaderSource(this.fragmentShader, fragmentShaderSource);
+		gl.shaderSource(this.fragmentShader, this.fragmentShaderSource);
 		gl.compileShader(this.fragmentShader);
 		if (!gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS)) {
 			console.log(this.name)
@@ -45,8 +52,18 @@ class ShaderProgram {
 		}
 
 		this.initCommonUniformsAndAttributes();
+		this.initCustomUniforms();
 		// console.log(this.program)
 	}
+	initCustomUniforms(){
+		//to be overloaded by subclass
+		console.log("not overloaded by subclass");
+	}
+
+	// updateCustomUniforms(dt,material){
+	// 	//to be overloaded by subclass
+	// }
+
 
 	initCommonUniformsAndAttributes(){
 		this.attributes.vertexPositionAttribute = gl.getAttribLocation(this.program, "aVertexPosition");

@@ -4,9 +4,8 @@ class SimpleColorShader extends ShaderProgram {
 	constructor(){
 		super("simpleColor",true);
 
-		super.init(SimpleColorShader.vertexShaderSource,SimpleColorShader.fragmentShaderSource);
+		super.loadShaderSource(SimpleColorShader.vertexShaderSource,SimpleColorShader.fragmentShaderSource);
 
-		this.initCustomUniforms();
 
 
 	}
@@ -67,3 +66,5 @@ SimpleColorShader.fragmentShaderSource = `
 		gl_FragColor.rgb *= vLighting;
 	}
 `;
+
+ShaderManager.shaderPrograms.push(new SimpleColorShader());

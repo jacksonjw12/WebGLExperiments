@@ -5,9 +5,9 @@ class DefaultShader extends ShaderProgram {
 		super("default",false);
 		this.i = 0;
 
-		super.init(DefaultShader.vertexShaderSource,DefaultShader.fragmentShaderSource);
+		super.loadShaderSource(DefaultShader.vertexShaderSource,DefaultShader.fragmentShaderSource);
 
-		this.initCustomUniforms();
+
 
 
 	}
@@ -101,11 +101,4 @@ DefaultShader.fragmentShaderSource = `
 	}
 `;
 
-
-// let defaultVertexShader = `
-// `
-
-// let defaultFragmentShader = `
-
-
-// `
+ShaderManager.shaderPrograms.push(new DefaultShader());

@@ -4,8 +4,8 @@ class DepthShader extends ShaderProgram {
 	constructor(){
 		super("depth",false);
 
-		super.init(DepthShader.vertexShaderSource,DepthShader.fragmentShaderSource);
-		this.initCustomUniforms();
+		super.loadShaderSource(DepthShader.vertexShaderSource,DepthShader.fragmentShaderSource);
+
 
 
 	}
@@ -62,3 +62,4 @@ DepthShader.fragmentShaderSource = `
 	}
 `;
 
+ShaderManager.shaderPrograms.push(new DepthShader());

@@ -4,9 +4,8 @@ class PhongShader extends ShaderProgram {
 	constructor(){
 		super("phong",true);
 
-		super.init(PhongShader.vertexShaderSource,PhongShader.fragmentShaderSource);
+		super.loadShaderSource(PhongShader.vertexShaderSource,PhongShader.fragmentShaderSource);
 
-		this.initCustomUniforms();
 
 
 	}
@@ -113,3 +112,5 @@ PhongShader.fragmentShaderSource = `
 		//gl_FragColor.rgb *= vLighting;
 	}
 `;
+
+ShaderManager.shaderPrograms.push(new PhongShader());

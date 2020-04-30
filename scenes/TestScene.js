@@ -32,7 +32,12 @@ class TestScene extends Scene{
 				"color":vec4.fromValues(.5,1,1,1.)
 			}
 		}))
+		let getRandomShader = ()=>{
 
+			let possibleShaders = ["phong","depth","cool"];
+			let i = Math.floor(Math.random()*possibleShaders.length);
+			return possibleShaders[i];
+		}
 
 		for(let r = 0; r< 4; r++){
 			for(let c = 0; c<4; c++){
@@ -40,7 +45,7 @@ class TestScene extends Scene{
 					"pos":vec3.fromValues(-5 + r*3, -2.5, -5 + c*3),
 					"rot":quat.fromEuler(quat.create(), 90+r*c+c, 0, 0),
 					"scale":vec3.fromValues(1, 1, .2),
-					"material":new ShaderMaterial((Math.random()>.5)?"phong":"depth"),
+					"material":new ShaderMaterial(getRandomShader()),
 
 					"materialOptions":{
 						"color":vec4.fromValues(.5, .5, .5, 1.)
