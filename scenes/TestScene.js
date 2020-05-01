@@ -4,20 +4,22 @@ class TestScene extends Scene{
 	    super(name,objects);
 
 
-	    //triangle
-		super.addObject(new Triangle({
-			"pos":vec3.fromValues(3,0,0),
-			"rot":quat.fromEuler(quat.create(),10,0,0)
-		}));
+	    // //triangle
+		// super.addObject(new Triangle({
+		// 	"pos":vec3.fromValues(3,0,0),
+		// 	"rot":quat.fromEuler(quat.create(),10,0,0)
+		// }));
 
 		//square
-		super.addObject(new Plane({"pos":vec3.fromValues(0,0,0),
-			"material":new ShaderMaterial("cool"),
-		}));
+		this.plane = new Plane({"pos":vec3.fromValues(0,0,0),
+			"scale":vec3.fromValues(4,2,1),
+			"material":new ShaderMaterial("raymarch"),
+		})
+		super.addObject(this.plane);
 
 		//depth circle
 		super.addObject(new Circle({
-			"pos":vec3.fromValues(-3, 0, 0),
+			"pos":vec3.fromValues(0, 3, 0),
 			"material":new ShaderMaterial("depth"),
 			"materialOptions":{
 				"color":vec4.fromValues(.5,1,1,1.)
@@ -57,15 +59,15 @@ class TestScene extends Scene{
 				}));
 			}
 		}
-
-		super.addObject(new Cube({
-			"scale":vec3.fromValues(.1,.1,.1),
-			"pos":super.lightPosition,
-			"shader":ShaderManager.getShader("simpleColor"),
-			"materialOptions":{
-				"color":vec4.fromValues(0.7078, 0.6644, 0.2398,1.0)
-			}
-		}))
+		//
+		// super.addObject(new Cube({
+		// 	"scale":vec3.fromValues(.1,.1,.1),
+		// 	"pos":super.lightPosition,
+		// 	"shader":ShaderManager.getShader("simpleColor"),
+		// 	"materialOptions":{
+		// 		"color":vec4.fromValues(0.7078, 0.6644, 0.2398,1.0)
+		// 	}
+		// }))
 
 
 
@@ -94,6 +96,9 @@ class TestScene extends Scene{
 		//super.lightPosition= vec3.fromValues(circlingRadius * Math.cos(dt/10000 * circlingSpeed),super.lightPosition.y,circlingRadius * Math.sin(dt/10000 * circlingSpeed));
 		// console.log(this.camera.rot)
 		//quat.fromEuler(this.camera.rot,0,360*Math.cos(dt/1000),0)
+
+		this.plane.rot = quat.invert(quat.create(), this.camera.rot);
+		// console.log(this.plane.rot)
 
 	}
 

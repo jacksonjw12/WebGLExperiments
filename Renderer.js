@@ -11,6 +11,7 @@ class Renderer{
 		gl.enable(gl.DEPTH_TEST);
 
 
+		// this.scene = new PlaneScene();
 		this.scene = new TestScene();
 		// this.scene = new Scene();
 		// this.scene.addObject(new Cube({
@@ -81,7 +82,7 @@ class Renderer{
 			shader.updateMatrixUniforms(this.scene.camera.pMatrix,this.mvOMatrix,this.scene.lightingDirection,this.scene.ambientLighting,this.scene.lightPosition);
 
 			//give the shader any custom uniforms that it might need
-			shader.updateCustomUniforms(dt,material,object,this.scene.camera.pMatrix,this.mvOMatrix)
+			shader.updateCustomUniforms(dt,material,object,this.scene.camera.pMatrix,this.mvOMatrix,this.scene.camera)
 
 			//draw to the screen
 			gl.drawArrays(geometry.renderMethod, 0, geometry.vertexPositionBuffer.numItems);
