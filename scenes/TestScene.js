@@ -30,13 +30,13 @@ class TestScene extends Scene{
 		//skybox thing
 
 
-		super.addObject(new Cube({
-			"scale":vec3.fromValues(20,20,20),
-			"material":new ShaderMaterial("cool2"),
-			"materialOptions":{
-				"color":vec4.fromValues(.5,1,1,1.)
-			}
-		}))
+		// super.addObject(new Cube({
+		// 	"scale":vec3.fromValues(20,20,20),
+		// 	"material":new ShaderMaterial("cool2"),
+		// 	"materialOptions":{
+		// 		"color":vec4.fromValues(.5,1,1,1.)
+		// 	}
+		// }))
 
 		let possibleShaders = ["phong","depth","cool","cool2"];
 		let usedShaders = [];
