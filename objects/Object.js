@@ -9,10 +9,11 @@ class Object {
 		this.geometry = (args.geometry !== undefined)?args.geometry:new Cube();
 		this.material = (args.material !== undefined)?args.material:new defaultMaterial(args.materialOptions,this.geometry);
 
-
 		this.pointLight = (args.pointLight !== undefined)?args.pointLight:false;
 
 		this.action = (args.action !== undefined)?args.action:undefined;
+
+		this.transparent = (args.transparent !== undefined)?args.transparent:false;
 	}
 	//currently unused, might be useful in future
 	static registerObject(o){

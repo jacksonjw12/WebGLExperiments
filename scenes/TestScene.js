@@ -14,6 +14,7 @@ class TestScene extends Scene{
 		this.plane = new Plane({"pos":vec3.fromValues(0,0,0),
 			"scale":vec3.fromValues(4,2,1),
 			"material":new ShaderMaterial("raymarch"),
+			"transparent":true
 		})
 		super.addObject(this.plane);
 
@@ -37,11 +38,20 @@ class TestScene extends Scene{
 			}
 		}))
 
+		let possibleShaders = ["phong","depth","cool","cool2"];
+		let usedShaders = [];
 		let getRandomShader = ()=>{
+			console.log(possibleShaders);
+			if(possibleShaders.length === 0){
+				possibleShaders = usedShaders;
+				usedShaders = [];
+			}
 
-			let possibleShaders = ["phong","depth","cool","cool2"];
 			let i = Math.floor(Math.random()*possibleShaders.length);
-			return possibleShaders[i];
+			let s = possibleShaders[i];
+			usedShaders.push(s);
+			possibleShaders.splice(i,1)
+			return s;
 		}
 
 		for(let r = 0; r< 1; r++){

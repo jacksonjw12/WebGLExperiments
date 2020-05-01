@@ -6,9 +6,13 @@ class Renderer{
 		this.mvOMatrix = mat4.create();
 
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
- 		gl.enable(gl.BLEND);
+		///gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 		gl.clearColor(1.0, 1.0, 1.0, 1.0);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+
 		gl.enable(gl.DEPTH_TEST);
+		// gl.depthMask(false);
 
 
 		// this.scene = new PlaneScene();
@@ -48,11 +52,22 @@ class Renderer{
 
 		let object,shader,geometry,material;
 		// console.log(this.scene.objects[0])
+		this.scene.sortObjects();
+
+		let blending = false;
+		gl.disable(gl.BLEND);
+		gl.depthMask(true);
 		for(let o = 0; o < this.scene.objects.length; o++){
 			object = this.scene.objects[o];
 			material = object.material;
 			shader = material.shader;
 			geometry = object.geometry;
+
+			if(!blending && object.transparent){
+				blending = true;
+				gl.enable(gl.BLEND);
+				gl.depthMask(false);
+			}
 
 
 

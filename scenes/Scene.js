@@ -16,13 +16,18 @@ class Scene{
 		this.camera = new Camera()
 
 		if (new.target === Scene) {
-			this.addObject(new Cube({"material":new ShaderMaterial("rayMarch"),"scale":vec3.fromValues(1.0,1.0,1.0)}))
-			this.addObject(new Cube({"material":new ShaderMaterial("phong"),"pos":vec3.fromValues(0,0,-.5),"scale":vec3.fromValues(.6,.6,.6)}))
+			this.addObject(new Cube({"material":new ShaderMaterial("cool"),"scale":vec3.fromValues(1.0,1.0,1.0)}))
+			this.addObject(new Cube({"material":new ShaderMaterial("cool"),"pos":vec3.fromValues(0,0,-.5),"scale":vec3.fromValues(.6,.6,.6)}))
 
-			this.addObject(new Cube({"material":new ShaderMaterial("cool2"),"pos":vec3.fromValues(0,0,-.7),"scale":vec3.fromValues(.5,.5,.5)}))
+			this.addObject(new Cube({"material":new ShaderMaterial("cool"),"pos":vec3.fromValues(0,0,-.7),"scale":vec3.fromValues(.5,.5,.5)}))
 		}
 		this.pdt = -1;
 
+	}
+	sortObjects(){
+		this.objects.sort((a,b)=>{
+			return (a.transparent === b.transparent)?0 : (a.transparent?1 : -1);
+		})
 	}
 
 	animate(dt){

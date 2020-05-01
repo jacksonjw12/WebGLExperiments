@@ -57,18 +57,20 @@ CoolShader.vertexShaderSource = `
 	
 	
 	varying vec3 ObjectPos;
-	varying vec3 FragPos;
+//	varying vec3 FragPos;
 	
 	//varying vec3 objectLocation;
 	void main(void) {
 		//FragPos = vec3(uMVMatrix * aVertexPosition);
 		
 		//mat4 objectMV = uPMatrix * uMVMatrix;
-		vec4 oPos = uPMatrix * uMVMatrix * vec4(0.,0.,0.,1.0); 
 		gl_Position = uPMatrix * uMVMatrix * aVertexPosition;
 		
-		FragPos = gl_Position.xyz / gl_Position.w;
+		
+		vec4 oPos = uPMatrix * uMVMatrix * vec4(0.0,0.0,0.0,1.0); 
+		
 		ObjectPos = oPos.xyz / oPos.w;
+		ObjectPos = (ObjectPos+1.)/2.;
 		//vec4 objectPos = vec4(0,0,0,1.0);
 		//objectPos = objectMV;//uPMatrix * objectPos;
 //		objectLocation = vec3(objectMV[3]);
@@ -84,15 +86,17 @@ CoolShader.fragmentShaderSource = `
 	uniform float u_random;
 	
 	varying vec3 ObjectPos;
-	varying vec3 FragPos;
+//	varying vec3 FragPos;
 	//uniform vec3 u_objectScreenLocation;
 
 	void main() {
+		vec2 FragPos = gl_FragCoord.xy/u_resolution;
+
 		vec3 bgColor = vec3(.70,0.6,.25);
 		
 		vec2 oPos = vec2(ObjectPos.x,ObjectPos.y);
-		vec2 fPos = vec2(FragPos.x,FragPos.y);
-		float diff = abs(sin( (distance(oPos,fPos)*30.0) + u_time)/1.0);//(objectPos.x/objectPos.w-gl_FragCoord.x);//gl_FragCoord.x/u_resolution.x- 
+		//vec2 fPos = vec2(gl_FragCoord.x,gl_FragCoord.y);
+		float diff = abs(sin( (distance(ObjectPos.xy,FragPos) * 30.) + u_time/1.0));//(objectPos.x/objectPos.w-gl_FragCoord.x);//gl_FragCoord.x/u_resolution.x- 
 		
 		gl_FragColor  = vec4(diff,diff,diff,1.0);
 		
