@@ -11,7 +11,9 @@ class TestScene extends Scene{
 		}));
 
 		//square
-		super.addObject(new Plane({"pos":vec3.fromValues(0,0,0)}));
+		super.addObject(new Plane({"pos":vec3.fromValues(0,0,0),
+			"material":new ShaderMaterial("cool"),
+		}));
 
 		//depth circle
 		super.addObject(new Circle({
@@ -27,11 +29,12 @@ class TestScene extends Scene{
 
 		super.addObject(new Cube({
 			"scale":vec3.fromValues(20,20,20),
-			"shader":ShaderManager.getShader("phong"),
+			"material":new ShaderMaterial("cool2"),
 			"materialOptions":{
 				"color":vec4.fromValues(.5,1,1,1.)
 			}
 		}))
+
 		let getRandomShader = ()=>{
 
 			let possibleShaders = ["phong","depth","cool","cool2"];
@@ -39,17 +42,18 @@ class TestScene extends Scene{
 			return possibleShaders[i];
 		}
 
-		for(let r = 0; r< 4; r++){
+		for(let r = 0; r< 1; r++){
 			for(let c = 0; c<4; c++){
 				super.addObject(new Cube({
-					"pos":vec3.fromValues(-5 + r*3, -2.5, -5 + c*3),
+					"pos":vec3.fromValues(r*5, -2.5, -5 + c*3),
 					"rot":quat.fromEuler(quat.create(), 90+r*c+c, 0, 0),
-					"scale":vec3.fromValues(1, 1, .2),
-					"material":new ShaderMaterial(getRandomShader()),
+					"scale":vec3.fromValues(3, 1, .2),
+					"material":new ShaderMaterial(getRandomShader(),{
+						"color":vec4.fromValues(.5, .5, .5, 1.),
+						"inverse":true
+					}),
 
-					"materialOptions":{
-						"color":vec4.fromValues(.5, .5, .5, 1.)
-					}
+
 				}));
 			}
 		}

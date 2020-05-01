@@ -11,8 +11,8 @@ class Renderer{
 		gl.enable(gl.DEPTH_TEST);
 
 
-		// this.scene = new TestScene();
-		this.scene = new Scene();
+		this.scene = new TestScene();
+		// this.scene = new Scene();
 		// this.scene.addObject(new Cube({
 		// 	"scale":vec3.fromValues(1,1,1),
 		// 	"shader":ShaderManager.getShader("simpleColor"),

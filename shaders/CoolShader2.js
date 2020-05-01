@@ -19,7 +19,10 @@ class CoolShader2 extends ShaderProgram {
 		this.costantUniform = gl.getUniformLocation(this.program, "u_constants");
 		this.colorUniform = gl.getUniformLocation(this.program, "u_color");
 		this.resolutionUniform = gl.getUniformLocation(this.program, "u_resolution");
-		this.objectScreenLocationUniform = gl.getUniformLocation(this.program,"u_objectScreenLocation")
+		this.objectScreenLocationUniform = gl.getUniformLocation(this.program,"u_objectScreenLocation");
+
+		this.inverseUniform = gl.getUniformLocation(this.program,"u_inverse");
+
 	}
 	getNoiseVector(dt,y,size,bounds){
 		size = (size !== undefined)?size:3;
@@ -45,6 +48,7 @@ class CoolShader2 extends ShaderProgram {
 		gl.uniform4fv(this.colorUniform, material.color);
 		gl.uniform1f(this.timeUniform, dt/1000.0);
 
+		gl.uniform1i( this.inverseUniform,(material.materialOptions.inverse !== undefined)?material.materialOptions.inverse:false);
 
 
 
@@ -103,8 +107,8 @@ CoolShader2.fragmentShaderSource = `
 	uniform vec2 u_resolution;
 	uniform float u_time;
 	uniform vec3 u_random;
-	
 	uniform vec4 u_constants;
+	uniform bool u_inverse;
 	
 	uniform vec3 u_objectScreenLocation;
 	varying vec3 ObjectPos;
@@ -150,64 +154,132 @@ CoolShader2.fragmentShaderSource = `
 		vec2 starStepX = vec2(1.0,0);
 		vec2 starStepY = vec2(0,1.0);
 		vec2 star, starSpeed;
-		float starRadius;
-		 
+		vec3 fColor;
+		vec4 starRadiuses = .25 - u_constants/4.;
+		float avgStarRadius = dot(starRadiuses,vec4(1.))/3.3;
+		vec4 minDist = vec4(1.0,1.0,1.0,1.0);
+		vec4 avgDist = vec4(0,0,0,0);
 		for(int i = 0; i<4; i++ ){
+			
 			uc = 2.0*(u_constants[i] - .5);
 			
-			starRadius = 0.25-u_constants[i]/4.;
-			starSpeed = vec2(uc + sin(uc*u_time / 100.),uc + cos(1.5+ uc*u_time / 100.))/2.0;
+			// = 0.25-u_constants[i]/4.;
+			starSpeed = vec2(uc + sin(uc*u_time / 100.),uc + cos(1.5+ uc*u_time / 100.))/4.0;
 			star = mod(vec2(u_time*starSpeed.x + u_constants[i] +ObjectPos.x,u_time*starSpeed.y + u_constants[i] +ObjectPos.y),vec2(1.0,1.0));
 			
 
 			//center column
 			d = distance(object,star);
-
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,1.);//c;
 			
 			d = distance(object,star-starStepY);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,1.);//color += d;color += c;
 			
 			d = distance(object,star+starStepY);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,1.);//color += c;
 			
 			//left column
 			star -= starStepX;
 			
 			d = distance(object,star);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,1.);//color += c;
 			
 			d = distance(object,star-starStepY);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,1.);//color += c;
 			
 			d = distance(object,star+starStepY);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,1.);//color += c;
 			
 			//right column
 			star +=2.* starStepX;
 			
 			d = distance(object,star);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,.3);//color += c;
 			
 			d = distance(object,star-starStepY);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += max(d,.3);//color += c;
 			
 			d = distance(object,star+starStepY);
-			c = 1.-smoothstep(0.0,starRadius,d);
-			color += c;
+			if(d < minDist[i]){
+				minDist[i] = d;
+			}
+			avgDist[i] += d;
+			//c = 1.-smoothstep(0.0,starRadius,d);
+			color += min(d,1.);//color += c;
 			
 			
 			
 		};
-		color/=2.;
+		gl_FragColor = vec4(bgColor,1.0);
+		
+		//avgDist /= 800000.;
+		
+		vec4 iMin =minDist;
+		float min = pow(length(iMin)/2.,2.);
+		//float min2 = length(avgDist)/2.;
+//		
+		
+		
+		if(min < .17){
+			gl_FragColor = vec4(gl_FragColor.xyz + vec3(smoothstep(0.0,0.5,min)),1.0);
+		}
+		
+		if(u_inverse){
+			gl_FragColor = vec4(vec3(1.0)-gl_FragColor.xyz,1.0);
+		}
+		
+		
+			
+//		}
+//		else{
+//			//gl_FragColor =  vec4(gl_FragColor.xyz + vec3(smoothstep(0.0,0.5,min)),1.0);
+//		}
+		
+		
+		
+		
+		
+		//color/=9.;
 		
 		
 //		if(color < .3){
@@ -216,7 +288,7 @@ CoolShader2.fragmentShaderSource = `
 		
 		
 		
-		gl_FragColor =  vec4(bgColor +vec3(color),1.0);
+		//gl_FragColor =  vec4(bgColor +vec3(color),1.0);
 //		if( d< .1 || d>1.  ){
 //		//if(mod(FragPos2.x,.025) < .0125 && mod(FragPos2.y,.025) < .0125){
 //			gl_FragColor = vec4(1.,1.,1.,1.);
