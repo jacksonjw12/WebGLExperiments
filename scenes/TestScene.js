@@ -34,7 +34,7 @@ class TestScene extends Scene{
 		}))
 		let getRandomShader = ()=>{
 
-			let possibleShaders = ["phong","depth","cool"];
+			let possibleShaders = ["phong","depth","cool","cool2"];
 			let i = Math.floor(Math.random()*possibleShaders.length);
 			return possibleShaders[i];
 		}

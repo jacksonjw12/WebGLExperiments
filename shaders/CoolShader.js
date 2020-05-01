@@ -16,7 +16,7 @@ class CoolShader extends ShaderProgram {
 		this.randUniform = gl.getUniformLocation(this.program, "u_random");
 		this.colorUniform = gl.getUniformLocation(this.program, "u_color");
 		this.resolutionUniform = gl.getUniformLocation(this.program, "u_resolution");
-		this.objectScreenLocationUniform = gl.getUniformLocation(this.program,"u_objectScreenLocation")
+		//this.objectScreenLocationUniform = gl.getUniformLocation(this.program,"u_objectScreenLocation")
 	}
 
 	updateCustomUniforms(dt,material,object,pMatrix,mvOMatrix){
@@ -28,11 +28,19 @@ class CoolShader extends ShaderProgram {
 
 		gl.uniform2fv(this.resolutionUniform,resolution);
 
-		let oMatrix = mat4.fromTranslation(mat4.create(),object.pos);
-		mat4.mul(oMatrix,oMatrix,mvOMatrix);
-		mat4.mul(oMatrix,pMatrix,mvOMatrix);
+		//let oMatrix = mat4.create();
+		//mat4.mul(oMatrix,this.scene.camera.mvMatrix,this.mvOMatrix);
 
-		gl.uniform3fv(this.objectScreenLocationUniform,mat4.getTranslation(vec3.create(),oMatrix));
+		// mat4.translate(oMatrix,oMatrix,vec3.fromValues(0.5,0.5,0.5));
+		// mat4.mul(oMatrix,pMatrix,mvOMatrix);
+		// mat4.mul(oMatrix,mvOMatrix,pMatrix);
+		// let objectPos = vec4.fromValues(object.pos[0],object.pos[1],object.pos[2],0.0);
+		// let screenPos = vec4.transformMat4(vec4.create(),objectPos,oMatrix);
+		// //let screenPos = mat4.getTranslation(vec3.create(),mvOMatrix)
+		// // console.log(screenPos);
+		// // let screenPos = vec3.fromValues(oMatrix[8],oMatrix[15],oMatrix[15]);
+		// console.log(screenPos);
+		// gl.uniform3fv(this.objectScreenLocationUniform,vec3.fromValues(screenPos.x,screenPos.y,screenPos.z));
 
 
 
@@ -48,16 +56,21 @@ CoolShader.vertexShaderSource = `
 	uniform mat4 uPMatrix;
 	
 	
-	
+	varying vec3 ObjectPos;
 	varying vec3 FragPos;
+	
 	//varying vec3 objectLocation;
 	void main(void) {
 		//FragPos = vec3(uMVMatrix * aVertexPosition);
 		
 		//mat4 objectMV = uPMatrix * uMVMatrix;
+		vec4 oPos = uPMatrix * uMVMatrix * vec4(0.,0.,0.,1.0); 
 		gl_Position = uPMatrix * uMVMatrix * aVertexPosition;
-		FragPos = gl_Position.xyz / gl_Position.w;
 		
+		FragPos = gl_Position.xyz / gl_Position.w;
+		ObjectPos = oPos.xyz / oPos.w;
+		//vec4 objectPos = vec4(0,0,0,1.0);
+		//objectPos = objectMV;//uPMatrix * objectPos;
 //		objectLocation = vec3(objectMV[3]);
 		
 	}
@@ -70,47 +83,19 @@ CoolShader.fragmentShaderSource = `
 	uniform float u_time;
 	uniform float u_random;
 	
-	uniform vec3 u_objectScreenLocation;
+	varying vec3 ObjectPos;
+	varying vec3 FragPos;
+	//uniform vec3 u_objectScreenLocation;
 
 	void main() {
 		vec3 bgColor = vec3(.70,0.6,.25);
-		//gl_FragColor = vec4(abs(mod(FragPos.x*10.0,1.0)),0.0,0.0,1.0);
-//		gl_FragColor = vec4(0.0,0.0,0.0,1.0);
-		//if(mod(gl_FragCoord.x,50.0) < 10. && mod(gl_FragCoord.y,50.0) < 10.) {
-		vec2 fragCoord = gl_FragCoord.xy - u_objectScreenLocation.xy - u_resolution/2.;
 		
-		float scale = 50.;
+		vec2 oPos = vec2(ObjectPos.x,ObjectPos.y);
+		vec2 fPos = vec2(FragPos.x,FragPos.y);
+		float diff = abs(sin( (distance(oPos,fPos)*30.0) + u_time)/1.0);//(objectPos.x/objectPos.w-gl_FragCoord.x);//gl_FragCoord.x/u_resolution.x- 
 		
-		float n = scale + 10.*sin(u_time) +u_random;
-		vec2 n1 = vec2(n);
-		vec2 n2 = n1/2.0;
-		vec2 modPos = abs(n2-mod(fragCoord.xy,n));
-		if(modPos.x == 0.0){
-			modPos.x = 0.1;
-		}
-		vec2 fnPos = vec2(0.0,10.*sin(modPos.x/7.95));
-		vec2 fn2Pos = vec2(0.0,10.*cos(modPos.x/7.95));
-//		if( distance(abs(n2 - modPos),vec2(0.,0.)) < 12.){
-//		if(  fnPos.y > modPos.y){
-//			//gl_FragColor = vec4(modPos.x/50.+modPos.y/50.,modPos.x/50.+modPos.y/50.,modPos.x/50.+modPos.y/50.,1.0);
-//
-//			//gl_FragColor = vec4(0.8,0.3,0.0,1.0);
-//			gl_FragColor = vec4((bgColor * (distance(abs(n2 - modPos),vec2(50.,50.))/50.0)),1.0);// + vec4(vec3(abs(sin(FragPos.x * FragPos.y))/4.0),1.0);
-//
-//		}
-//		else if(  fn2Pos.y > modPos.y){
-//		//else if(abs(n2-fnPos).y > modPos.y){
-//			gl_FragColor = vec4(0.9,0.1,0.3,1.0);
-//		}
-		//else{
-			//gl_FragColor = vec4(modPos.x/50.+modPos.y/50.,modPos.x/50.+modPos.y/50.,modPos.x/50.+modPos.y/50.,1.0);
-		float dist = distance(abs(n2 - modPos),n1);
-		gl_FragColor = vec4( ( bgColor - pow(dist/50.0,10.0) ) , 1.0);// + vec4(vec3(abs(sin(FragPos.x * FragPos.y))/4.0),1.0);
-
-		//}
+		gl_FragColor  = vec4(diff,diff,diff,1.0);
 		
-		//gl_FragColor = bgColor;// + vec4(vec3(abs(sin(FragPos.x * FragPos.y))/4.0),1.0);
-		// gl_FragColor.rgb *= vLighting;
 	}
 `;
 

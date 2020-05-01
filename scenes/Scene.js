@@ -16,10 +16,10 @@ class Scene{
 		this.camera = new Camera()
 
 		if (new.target === Scene) {
-			this.addObject(new Cube({"material":new ShaderMaterial("cool")}))
-			this.addObject(new Cube({"material":new ShaderMaterial("phong"),"pos":vec3.fromValues(0,0,-.5),"scale":vec3.fromValues(.6,.6,.6)}))
+			this.addObject(new Cube({"material":new ShaderMaterial("cool2"),"scale":vec3.fromValues(2.0,2.0,2.0)}))
+			//this.addObject(new Cube({"material":new ShaderMaterial("phong"),"pos":vec3.fromValues(0,0,-.5),"scale":vec3.fromValues(.6,.6,.6)}))
 
-			this.addObject(new Cube({"material":new ShaderMaterial("cool"),"pos":vec3.fromValues(0,0,-.7),"scale":vec3.fromValues(.5,.5,.5)}))
+			//this.addObject(new Cube({"material":new ShaderMaterial("cool2"),"pos":vec3.fromValues(0,0,-.7),"scale":vec3.fromValues(.5,.5,.5)}))
 		}
 		this.pdt = -1;
 
@@ -28,12 +28,12 @@ class Scene{
 	animate(dt){
 		let circlingRadius = 5;
 		let circlingSpeed = 2;
-		let cx = circlingRadius * Math.sin(dt/10000 * circlingSpeed)
-		let cy = 0//Math.sin(dt/1000);
+		let cx = circlingRadius * -Math.sin(dt/10000 * circlingSpeed)
+		let cy =Math.sin(dt/1000);
 		//let cz = circlingRadius * Math.sin(dt/10000 * circlingSpeed)
 		// console.log(this.camera.pos)
 		for(let o = 0; o< this.objects.length; o++){
-			this.objects[o].pos = vec3.fromValues(cx,this.objects[o].pos[1],this.objects[o].pos[2])
+			this.objects[o].pos = vec3.fromValues(cx,cy,this.objects[o].pos[2])
 
 		}
 		//this.camera.updatePosition(vec3.fromValues(cx,cy,0));
