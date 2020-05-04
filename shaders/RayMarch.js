@@ -111,7 +111,7 @@ RayMarch.fragmentShaderSource = `
 		return distance(rayLoc,sphereCenter)-radius;
 	}
 	float cubeDist(vec3 rayLoc, vec3 cubeCenter, vec3 scale){
-		vec3 q = abs(rayLoc-cubeCenter) - scale;
+		vec3 q = abs(rayLoc) - cubeCenter;
   		return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 	}
 	
@@ -128,8 +128,8 @@ RayMarch.fragmentShaderSource = `
 	}
 	
 	float computeSDF(vec3 rayLoc){
-		float scale = 1.0;
-		float d1 = sphereDist(rayLoc, vec3(sin(u_time/4. + PI/2.) * scale/2.,0,0),0.5 * scale);
+		float scale = 0.5;
+		float d1 = sphereDist(rayLoc, vec3(sin(PI/2.) * scale/2.,0,0),0.5 * scale);
 		float d2 =sphereDist(rayLoc, vec3(sin(u_time/4.) * scale/2.,0,0),0.5 * scale);
 		
 		float d3 = cubeDist(rayLoc, vec3(0,0,0), vec3(.6*scale));
@@ -150,9 +150,9 @@ RayMarch.fragmentShaderSource = `
 			avgs += 1.;
 		}
 		if(avgs > 0.){
-			return differenceSDF(dAvg / avgs,differenceSDF(d1,d2));
+//			return differenceSDF(dAvg / avgs,differenceSDF(d1,d2));
 			//return unionSDF(d1,unionSDF(d2,d3));
-//			return d1;
+			return d1;
 		}
 		else{
 			return MAX_DIST;
@@ -196,11 +196,7 @@ RayMarch.fragmentShaderSource = `
 			computeSDF(vec3(p.x, p.y, p.z  + EPSILON)) - computeSDF(vec3(p.x, p.y, p.z - EPSILON))
 		));
 	}
-	vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
-		vec2 xy = fragCoord - size / 2.0;
-		float z = size.y / tan(radians(fieldOfView) / 2.0);
-		return normalize(vec3(xy, -z));
-	}
+	
 
 	vec3 pointLighting(vec3 camera,vec3 rayPos,vec3 rayNormal, vec3 lightPos, vec3 lightIntensity, vec3 diffuseColor, vec3 specularColor, float shininess){
 		
@@ -255,15 +251,45 @@ RayMarch.fragmentShaderSource = `
 			vec4(0.0, 0.0, 0.0, 1)
 		);
 	}
-	void main() {
 
-		vec3 dir = rayDirection(45.0, u_resolution, gl_FragCoord.xy);
+	vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
+		vec2 xy = fragCoord - size / 2.0;
+		float z = size.y / tan(radians(fieldOfView) / 2.0);
+		return normalize(vec3(xy, -z));
+	}
+	void main() {
+		
+		vec2 FragCoord = gl_FragCoord.xy ;
+
 		vec3 camera = u_cameraPos;
+		//vec3 dir = rayDirection(45.0, u_resolution, gl_FragCoord.xy);
+		/* ________other website w/*/
+//		xy = xy * 2.- vec2(1.);
+//		xy.x *= u_resolution.x/u_resolution.y;
+//		vec3 pixelPos = vec3(xy, 2.); // Image plane at (0,0,2)
+//		vec3 eyePos = vec3(0.,0.,5.); // Camera position at (0,0,5)
+//		vec3 dir = normalize(pixelPos-eyePos);
+		/* _________________*/
+		
+		vec2 xy = (FragCoord / u_resolution - 0.5)*2.0;
+		xy.x *= u_resolution.x/u_resolution.y;
+		vec3 eye = vec3(0,0,0);
+		vec3 plane = vec3(xy,-5.);
+		
+		vec3 dir = normalize(plane);
+		
+		/* ________raymarching primitives way_________*/
+//		vec2 p = (2.0*FragCoord-u_resolution.xy)/u_resolution.y;
+		//vec3 rd = ca * normalize( vec3(p,2.5) );
+
+		/* _________________*/
+		//rayDirection(45.0, u_resolution, gl_FragCoord.xy);
 		//camera = uMVMatrix * camera;
 		
 		mat4 viewToWorld = viewMatrix(camera, vec3(0.0, 0.0, 0.0), vec3(0.0,1.0,0.0));
     
-    	vec3 worldDir = (viewToWorld * vec4(dir, 0.0)).xyz;
+    	vec3 worldDir = (u_MVMatrix * vec4(dir,0.0)).xyz;//(viewToWorld * vec4(dir, 0.0)).xyz;
+    	
 		
 		vec4 distV = shortestDistanceToSurface(camera, worldDir, MIN_DIST, MAX_DIST);
 		float dist  = distV.z;
@@ -278,9 +304,17 @@ RayMarch.fragmentShaderSource = `
 
 		float aFactor = 1.0;
 		vec3 rayLoc;
+		
+//		float z = u_resolution.y /length(u_resolution) / tan(radians(45.) / 2.0);
+//		vec2 xy = gl_FragCoord.xy/u_resolution - 0.5;
+//		vec3 vector = vec3(xy, -z) ;
+		//vector /= length(vector);
+		
+//		gl_FragColor = vec4(gl_FragCoord.x/u_resolution.x,0.,0.,1.0);
+//		return;
 		if (dist > MAX_DIST - EPSILON) {
 			
-			//discard;
+			discard;
 			// Didn't hit anything
 			float edge = distV.w / float(MAX_MARCHING_STEPS);
 			float minDist = distV.y;
@@ -300,22 +334,22 @@ RayMarch.fragmentShaderSource = `
 				
 			}
 			
-			
+			return;
 		}
 		else{
 			rayLoc = camera + dist * worldDir;
 		}
 		
 		
-		vec3 N = estimateNormal(rayLoc);
-		vec3 ambientColor = N/2.0;//vec3(0.5, 0.5, 0.5);
-		float angle = abs(dot(N,worldDir) / PI);
+		//vec3 N = estimateNormal(rayLoc);
+		//vec3 ambientColor = N/2.0;//vec3(0.5, 0.5, 0.5);
+		//float angle = abs(dot(N,worldDir) / PI);
 		
-		vec3 light = doLighting(camera, rayLoc, N,ambientColor,N,specularColor,shininess);
+		//vec3 light = doLighting(camera, rayLoc, N,ambientColor,N,specularColor,shininess);
 		
 		
 		
-		gl_FragColor = vec4(light,aFactor);
+		gl_FragColor = vec4(1.0,0,0,aFactor);
 	}
 `;
 

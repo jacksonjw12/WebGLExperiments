@@ -64,7 +64,9 @@ class ShaderProgram {
 	// 	//to be overloaded by subclass
 	// }
 
+	updatePerGeometryUniforms(){
 
+	}
 	initCommonUniformsAndAttributes(){
 		this.attributes.vertexPositionAttribute = gl.getAttribLocation(this.program, "aVertexPosition");
 		// gl.enableVertexAttribArray(this.attributes.vertexPositionAttribute);

@@ -57,6 +57,8 @@ class Scene{
 
 	addObject(o){
 		this.objects.push(o);
+		this.sortObjects();
+
 	}
 	removeObject(o){
 		for(let i = 0; i < this.objects.length; i++){

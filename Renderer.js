@@ -1,9 +1,20 @@
+let showDebug = false;
+
+function debugInfo(tag,info){
+
+
+	if(showDebug){
+		console.log(tag, info);
+	}
+
+}
+
 class Renderer{
 
 	constructor(){
 
 		//used for drawing each object in the scene
-		this.mvOMatrix = mat4.create();
+		// this.mvOMatrix = mat4.create();
 
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		///gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -15,8 +26,8 @@ class Renderer{
 		// gl.depthMask(false);
 
 
-		// this.scene = new PlaneScene();
-		this.scene = new TestScene();
+		this.scene = new FlightScene();
+		// this.scene = new TestScene();
 		// this.scene = new Scene();
 		// this.scene.addObject(new Cube({
 		// 	"scale":vec3.fromValues(1,1,1),
@@ -26,9 +37,14 @@ class Renderer{
 		// 	}
 		// }))
 		//this.setupTestScene();
-
+		this.lastDT = 0;
 
 		this.tick = (dt)=> {
+			showDebug = (dt - this.lastDT > 2000);
+			if(showDebug){
+				this.lastDT = dt;
+			}
+
 			requestAnimationFrame(this.tick);
 
 			this.scene.animate(dt);
@@ -40,7 +56,9 @@ class Renderer{
 	}
 
 
+
 	drawScene(dt) {
+
 
 		// if(dt > 1000){
 		// 	return;
@@ -52,16 +70,30 @@ class Renderer{
 
 		let object,shader,geometry,material;
 		// console.log(this.scene.objects[0])
-		this.scene.sortObjects();
 
 		let blending = false;
 		gl.disable(gl.BLEND);
 		gl.depthMask(true);
+
+		let camera = this.scene.camera;
+		let viewMatrix = camera.getViewMatrix();
+
+		// let cameraRotInverse = quat.fromEuler(quat.create(),-camera.rot[0],-camera.rot[1],-camera.rot[2]);
+		// let rotAroundCamera = mat4.fromQuat(mat4.create(),cameraRotInverse);
+		//
+		//
+		// let cameraPosInverse = vec3.scale(vec3.create(),camera.pos,1);
+		// this.debugInfo("cameraposInverse: ",cameraPosInverse,false);
+		// let viewSpace = mat4.fromTranslation(mat4.create(),cameraPosInverse);
+		//
+		// let cameraTransformation = mat4.mul(mat4.create(),rotAroundCamera,viewSpace)//mat4.fromTranslationRotation(mat4.create(),cameraRotInverse,cameraPosInverse);
+
 		for(let o = 0; o < this.scene.objects.length; o++){
 			object = this.scene.objects[o];
 			material = object.material;
 			shader = material.shader;
 			geometry = object.geometry;
+			//let mvMatrix = mat4.create();
 
 			if(!blending && object.transparent){
 				blending = true;
@@ -75,33 +107,53 @@ class Renderer{
 
 			gl.useProgram(shader.program);
 
-			//get the matrix for the rotation, scale, and position of this object
-			mat4.fromRotationTranslationScale(this.mvOMatrix,object.rot,object.pos,object.scale)
-
-			//multiply by the cameras rot/pos matrix to get the correct position/rotation/scale
-			mat4.mul(this.mvOMatrix,this.scene.camera.mvMatrix,this.mvOMatrix);
 
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, geometry.vertexPositionBuffer);
-			gl.vertexAttribPointer(shader.attributes.vertexPositionAttribute, geometry.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-			gl.enableVertexAttribArray(shader.attributes.vertexPositionAttribute)
-			if(geometry.hasNormals && material.shader.usesNormals){
-				gl.bindBuffer(gl.ARRAY_BUFFER, geometry.normalBuffer);
-				gl.vertexAttribPointer(shader.attributes.normalAttribute, geometry.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-				gl.enableVertexAttribArray(shader.attributes.normalAttribute);
 
+
+
+			for(let g = 0; g< geometry.length; g++){
+				//get the model -> world transformation matrix
+				let mvGMatrix = mat4.fromRotationTranslationScale(mat4.create(),object.geometryDeltas[g].rot,object.geometryDeltas[g].pos,object.geometryDeltas[g].scale)
+				//mat4.mul(mvGMatrix,mvGMatrix,mvMatrix);
+
+				let mvMatrix = mat4.fromRotationTranslationScale(mat4.create(),object.rot,object.pos,object.scale)
+				if(object === this.scene.coords && g===0){
+					let o = vec4.fromValues(0,0,0,1);
+					//debugInfo("transformedOrigin",vec4.transformMat4(vec4.create(),o,mvMatrix))
+				}
+				mat4.mul(mvMatrix,mvMatrix,mvGMatrix);
+				if(!object.absolutePosition){
+					mat4.mul(mvMatrix,viewMatrix,mvMatrix);
+				}
+
+				if(object === this.scene.coords && g===0){
+					let o = vec4.fromValues(0,0,1,1);
+					//debugInfo("transformedOrigin2",vec4.transformMat4(vec4.create(),o,mvMatrix))
+				}
+
+
+
+				//pass the vertex shader the camera and vertex data
+				shader.updateMatrixUniforms(camera.pMatrix,mvMatrix,this.scene.lightingDirection,this.scene.ambientLighting,this.scene.lightPosition);
+				//give the shader any custom uniforms that it might need
+				shader.updateCustomUniforms(dt,material,object,camera.pMatrix,mvMatrix,camera)
+				shader.updatePerGeometryUniforms(g);
+
+
+				gl.bindBuffer(gl.ARRAY_BUFFER, geometry[g].vertexPositionBuffer);
+				gl.vertexAttribPointer(shader.attributes.vertexPositionAttribute, geometry[g].vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+				gl.enableVertexAttribArray(shader.attributes.vertexPositionAttribute)
+				if(geometry[g].hasNormals && material.shader.usesNormals){
+					gl.bindBuffer(gl.ARRAY_BUFFER, geometry[g].normalBuffer);
+					gl.vertexAttribPointer(shader.attributes.normalAttribute, geometry[g].normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+					gl.enableVertexAttribArray(shader.attributes.normalAttribute);
+
+				}
+
+				//draw to the screen
+				gl.drawArrays(geometry[g].renderMethod, 0, geometry[g].vertexPositionBuffer.numItems);
 			}
-
-
-			//pass the vertex shader the camera and vertex data
-			shader.updateMatrixUniforms(this.scene.camera.pMatrix,this.mvOMatrix,this.scene.lightingDirection,this.scene.ambientLighting,this.scene.lightPosition);
-
-			//give the shader any custom uniforms that it might need
-			shader.updateCustomUniforms(dt,material,object,this.scene.camera.pMatrix,this.mvOMatrix,this.scene.camera)
-
-			//draw to the screen
-			gl.drawArrays(geometry.renderMethod, 0, geometry.vertexPositionBuffer.numItems);
-
 		}
 
 
