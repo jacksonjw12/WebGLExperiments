@@ -9,30 +9,41 @@ class FlightScene extends Scene {
 			"scale":vec3.fromValues(1.0,1.0,1.0)
 	    })
 	    this.addObject(this.coords)
-		this.addObject(new Cube({"material":new ShaderMaterial("cool"),"scale":vec3.fromValues(1.0,1.0,1.0)}))
-		this.addObject(new Cube({"material":new ShaderMaterial("default"),"pos":vec3.fromValues(0,0,-.5),"scale":vec3.fromValues(.6,.6,.6)}))
+		//this.addObject(new Cube({"material":new ShaderMaterial("cool"),"scale":vec3.fromValues(1.0,1.0,1.0)}))
+		//this.addObject(new Cube({"material":new ShaderMaterial("default"),"pos":vec3.fromValues(0,0,-.5),"scale":vec3.fromValues(.6,.6,.6)}))
 
-		this.addObject(new Cube({"material":new ShaderMaterial("cool"),"pos":vec3.fromValues(0,0,-.7),"scale":vec3.fromValues(.5,.5,.5)}))
+		//this.addObject(new Cube({"material":new ShaderMaterial("cool"),"pos":vec3.fromValues(0,0,-.7),"scale":vec3.fromValues(.5,.5,.5)}))
 
         // this.addObject(new Cube({"material":new ShaderMaterial("simpleColor"),"scale":vec3.fromValues(1.0,1.0,1.0)}))
 
 		this.pointer = new Arrow({"material":new ShaderMaterial("coords"),"scale":vec3.fromValues(0.25,0.25,1.0)})
 		this.pointer.absolutePosition = true;
-		this.addObject(this.pointer)
+		//this.addObject(this.pointer)
 
 
         //this.camera.pos = vec3.fromValues(0,0,0);
 
 		this.plane = new Plane({
-			"material":new ShaderMaterial("cool2"),
+			"material":new ShaderMaterial("raymarch"),
 			materialOptions:{"color":vec4.fromValues(0.2,0.2,0.2,1.0)},
-			"scale":vec3.fromValues(10.0,10.,10.0),
-			"pos":vec3.fromValues(0,-2,0),
-			"rot":quat.fromEuler(quat.create(),90,0,0)
+			"scale":vec3.fromValues(10.0,10.0,10.0),
+			"pos":vec3.fromValues(0,0,-5),
+			"rot":quat.fromEuler(quat.create(),0,0,0),
+
 		})
+		// this.plane.absolutePosition = true;
 		this.addObject(this.plane)
 
-        this.camera.setPosition(vec3.fromValues(0,0,-2));
+        this.camera.setPosition(vec3.fromValues(0,0,20));
+		if(window.innerHeight > window.innerWidth){
+
+
+			let newRot = vec3.add(vec3.create(),this.camera.getRotation(),vec3.fromValues(0,-.1,0));
+
+			this.camera.setRotation(newRot);
+
+
+		}
 		this.pointer.pos = vec3.fromValues(0.1,0,-2);
 		this.cameraVelocity = vec3.fromValues(0,0,0);
 		this.lastDt = -1;
@@ -61,8 +72,12 @@ let cameraRot = this.camera.getInverseViewMatrix();
 		let leftStep = vec3.scale(vec3.create(),leftVector,timeStep * force);
 		let upStep = vec3.scale(vec3.create(),upVector,timeStep * force);
 
+		this.plane.rot = quat.invert(quat.create(), this.camera.getQRotation());
+		this.plane.pos = vec3.add(vec3.create(),this.camera.getPosition(),forwardVector);
 
-
+		// quat.rotateX(this.plane.rot,this.plane.rot,0.01)
+		// quat.rotateY(this.plane.rot,this.plane.rot,0.01)
+		// this.plane.pos[2] = 10*Math.sin(dt/1000);
 
 		let moveInput = vec3.fromValues(0,0,0);
 		if(input.keysDown.indexOf('I') > -1){
@@ -96,7 +111,9 @@ let cameraRot = this.camera.getInverseViewMatrix();
 			vec3.add(moveInput,moveInput,vec3.scale(vec3.create(),upStep,-1))
 		}
     	// console.log(this.cameraVelocity)
-
+		if(window.innerHeight > window.innerWidth){
+			vec3.add(moveInput,moveInput,forwardStep);
+		}
     	let acceleration = timeStep / 100;
     	vec3.scale(moveInput,moveInput,acceleration);
 
@@ -120,7 +137,7 @@ let cameraRot = this.camera.getInverseViewMatrix();
     	// console.log(vec3.distance(newPowws,this.camera.getPosition()))
 		this.camera.setPosition(newPos);
 
-		vec3.scale(this.cameraVelocity,this.cameraVelocity,timeStep/18)
+		vec3.scale(this.cameraVelocity,this.cameraVelocity,1/(timeStep-15.6))
 
 
 
@@ -150,6 +167,7 @@ let cameraRot = this.camera.getInverseViewMatrix();
 		if(input.keysDown.indexOf("'") > -1) {
 			rotMov[1] -= rotSpeed * timeStep;
 		}
+
 
 		let newRot = vec3.add(vec3.create(),this.camera.getRotation(),rotMov);
 

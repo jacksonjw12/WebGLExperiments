@@ -13,7 +13,7 @@ class Scene{
 		let lightingVector = vec3.scale(vec3.create(),this.lightingDirection,100);
 		vec3.sub(this.lightPosition,this.lightPosition,lightingVector);
 
-		this.camera = new Camera()
+		this.camera = new Camera();
 
 		if (new.target === Scene) {
 			this.addObject(new Cube({"material":new ShaderMaterial("cool"),"scale":vec3.fromValues(1.0,1.0,1.0)}))

@@ -73,6 +73,7 @@ class ShaderProgram {
 
 		this.uniforms.pMatrixUniform = gl.getUniformLocation(this.program, "uPMatrix");
 		this.uniforms.mvMatrixUniform = gl.getUniformLocation(this.program, "uMVMatrix");
+		this.uniforms.uWorldMatrix = gl.getUniformLocation(this.program, "uWorldMatrix");
 
 		if(this.usesNormals){
 			console.log("using normals")
@@ -90,10 +91,10 @@ class ShaderProgram {
 		}
 
 	}
-	updateMatrixUniforms(pMatrix, mvMatrix,lightingDirection,ambientLighting,lightPosition){
+	updateMatrixUniforms(pMatrix, mvMatrix,lightingDirection,ambientLighting,lightPosition,worldMatrix){
 		gl.uniformMatrix4fv(this.uniforms.pMatrixUniform, false, pMatrix);
 		gl.uniformMatrix4fv(this.uniforms.mvMatrixUniform, false, mvMatrix);
-
+		gl.uniformMatrix4fv(this.uniforms.uWorldMatrix,false,worldMatrix);
 
 		if(this.usesNormals){
 

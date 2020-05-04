@@ -25,9 +25,9 @@ class Renderer{
 		gl.enable(gl.DEPTH_TEST);
 		// gl.depthMask(false);
 
-
-		this.scene = new FlightScene();
-		// this.scene = new TestScene();
+		// this.scene = new FlightScene();
+		// this.scene = new PlaneScene();
+		this.scene = new TestScene();
 		// this.scene = new Scene();
 		// this.scene.addObject(new Cube({
 		// 	"scale":vec3.fromValues(1,1,1),
@@ -117,25 +117,24 @@ class Renderer{
 				let mvGMatrix = mat4.fromRotationTranslationScale(mat4.create(),object.geometryDeltas[g].rot,object.geometryDeltas[g].pos,object.geometryDeltas[g].scale)
 				//mat4.mul(mvGMatrix,mvGMatrix,mvMatrix);
 
-				let mvMatrix = mat4.fromRotationTranslationScale(mat4.create(),object.rot,object.pos,object.scale)
+				let worldMatrix = mat4.fromRotationTranslationScale(mat4.create(),object.rot,object.pos,object.scale)
 				if(object === this.scene.coords && g===0){
 					let o = vec4.fromValues(0,0,0,1);
 					//debugInfo("transformedOrigin",vec4.transformMat4(vec4.create(),o,mvMatrix))
 				}
-				mat4.mul(mvMatrix,mvMatrix,mvGMatrix);
+
+				mat4.mul(worldMatrix,worldMatrix,mvGMatrix);
+				let mvMatrix = worldMatrix;
 				if(!object.absolutePosition){
-					mat4.mul(mvMatrix,viewMatrix,mvMatrix);
+					mvMatrix = mat4.mul(mat4.create(),viewMatrix,mvMatrix);
 				}
 
-				if(object === this.scene.coords && g===0){
-					let o = vec4.fromValues(0,0,1,1);
-					//debugInfo("transformedOrigin2",vec4.transformMat4(vec4.create(),o,mvMatrix))
-				}
+
 
 
 
 				//pass the vertex shader the camera and vertex data
-				shader.updateMatrixUniforms(camera.pMatrix,mvMatrix,this.scene.lightingDirection,this.scene.ambientLighting,this.scene.lightPosition);
+				shader.updateMatrixUniforms(camera.pMatrix,mvMatrix,this.scene.lightingDirection,this.scene.ambientLighting,this.scene.lightPosition,worldMatrix);
 				//give the shader any custom uniforms that it might need
 				shader.updateCustomUniforms(dt,material,object,camera.pMatrix,mvMatrix,camera)
 				shader.updatePerGeometryUniforms(g);

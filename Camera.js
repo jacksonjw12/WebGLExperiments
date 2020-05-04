@@ -1,15 +1,13 @@
 class Camera{
 
-	#pos
-	#rot
-	#viewMatrix
+
 	constructor(){
 
-		this.#viewMatrix = mat4.create();
+		this.viewMatrix = mat4.create();
 
 		this.needsUpdate = true;
-		this.#pos = vec3.fromValues(0, 0.0, -7.0);
-		this.#rot = vec3.fromValues(0,0,0);
+		this.pos = vec3.fromValues(0, 0.0, -7.0);
+		this.rot = vec3.fromValues(0,0,0);
 
 
 		this.pMatrix = mat4.create();
@@ -28,20 +26,21 @@ class Camera{
 	}
 	getViewMatrix(){
 		if(this.needsUpdate){
-			mat4.identity(this.#viewMatrix);
-			mat4.rotateX(this.#viewMatrix,this.#viewMatrix,-this.#rot[0]); // ?
-			mat4.rotateY(this.#viewMatrix,this.#viewMatrix,-this.#rot[1]);
-			mat4.rotateZ(this.#viewMatrix,this.#viewMatrix,-this.#rot[2]);
-			mat4.translate(this.#viewMatrix,this.#viewMatrix,vec3.scale(vec3.create(),this.#pos,-1))
+			mat4.identity(this.viewMatrix);
+			mat4.rotateX(this.viewMatrix,this.viewMatrix,-this.rot[0]); // ?
+			mat4.rotateY(this.viewMatrix,this.viewMatrix,-this.rot[1]);
+			mat4.rotateZ(this.viewMatrix,this.viewMatrix,-this.rot[2]);
+			mat4.translate(this.viewMatrix,this.viewMatrix,vec3.scale(vec3.create(),this.pos,-1))
 			this.needsUpdate = false;
 			//mat4.fromRotationTranslation(this.#viewMatrix,this.rot,)
 		}
-		return this.#viewMatrix;
+		return this.viewMatrix;
 	}
 	getInverseViewMatrix(){
+		this.getViewMatrix();
 		let inverseView = mat4.identity(mat4.create())
-		mat4.rotateX(inverseView,inverseView,-this.#rot[0]); // ?
-		mat4.rotateY(inverseView,inverseView,-this.#rot[1]);
+		mat4.rotateX(inverseView,inverseView,-this.rot[0]); // ?
+		mat4.rotateY(inverseView,inverseView,-this.rot[1]);
 		mat4.invert(inverseView,inverseView);
 
 		//mat4.rotateZ(inverseView,inverseView,this.#rot[2]);
@@ -50,25 +49,32 @@ class Camera{
 	}
 
 	setPosition(newPos){
-		this.#pos = newPos;
+		this.pos = newPos;
 		this.needsUpdate = true;
 
 	}
 	getPosition(){
-		return this.#pos;
+		return this.pos;
 	}
 
 	setRotation(newRot){
-		this.#rot = newRot;
+		this.rot = newRot;
 		this.needsUpdate = true;
 	}
+	getQRotation(){
+		return mat4.getRotation(quat.create(),this.getViewMatrix());
+	}
+
 	getRotation(){
-		return this.#rot;
+		return this.rot;
 	}
 
 	pointAt(location){
-		mat4.lookAt(this.#viewMatrix,this.#pos,location,vec3.fromValues(0,1,0))
-		mat4.getRotation(this.#rot,this.#viewMatrix);
+		//mat4.lookAt()
+
+		mat4.lookAt(this.viewMatrix,this.pos,location,vec3.fromValues(0,1,0))
+
+		this.needsUpdate=false;
 	}
 
 

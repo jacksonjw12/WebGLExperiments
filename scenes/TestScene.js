@@ -14,7 +14,7 @@ class TestScene extends Scene{
 		this.plane = new Plane({"pos":vec3.fromValues(0,0,0),
 			"scale":vec3.fromValues(4,2,1),
 			"material":new ShaderMaterial("raymarch"),
-			"transparent":true
+			"transparent":false
 		})
 		super.addObject(this.plane);
 
@@ -100,14 +100,15 @@ class TestScene extends Scene{
 		let cz = circlingRadius * Math.sin(dt/10000 * circlingSpeed)
 		// console.log(this.camera.pos)
 
-		this.camera.updatePosition(vec3.fromValues(cx,cy,cz));
+		this.camera.setPosition(vec3.fromValues(cx,cy,cz));
 		this.camera.pointAt(vec3.fromValues(0,0,0))
 		this.lightPosition.x += 5*Math.sin(dt/10000 * circlingSpeed)
 		//super.lightPosition= vec3.fromValues(circlingRadius * Math.cos(dt/10000 * circlingSpeed),super.lightPosition.y,circlingRadius * Math.sin(dt/10000 * circlingSpeed));
 		// console.log(this.camera.rot)
 		//quat.fromEuler(this.camera.rot,0,360*Math.cos(dt/1000),0)
-
-		this.plane.rot = quat.invert(quat.create(), this.camera.rot);
+		//console.log(this.camera.getRotation())
+		this.plane.pos = vec3.fromValues(cx/2,cy/2,cz/2)
+		this.plane.rot = quat.invert(quat.create(), this.camera.getQRotation());
 		// console.log(this.plane.rot)
 
 	}

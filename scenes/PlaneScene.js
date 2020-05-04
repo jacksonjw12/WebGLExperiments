@@ -10,13 +10,14 @@ class PlaneScene extends Scene{
 		super.addObject(new Plane({
             "pos":vec3.fromValues(0,0,0),
             "scale":vec3.fromValues(aspect,1.0,1.0),
+
 			"material":new ShaderMaterial("raymarch"),
 		}));
 
         //this.camera.pos = vec3.fromValues(0,0,0);
 
 
-        this.camera.updatePosition(vec3.fromValues(0,0,-1.7));
+        this.camera.setPosition(vec3.fromValues(0,0,5));
 
 
 	}
